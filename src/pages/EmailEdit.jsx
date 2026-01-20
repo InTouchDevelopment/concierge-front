@@ -307,15 +307,23 @@ export default function EmailEdit() {
     setActivities(newActivities);
   };
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('en-US', {
+  function formatDateLocal(dateStr) {
+    if (!dateStr) return '';
+    
+    // Parse date components from ISO string (YYYY-MM-DD)
+    const [year, month, day] = dateStr.split('-').map(Number);
+    
+    // Create date in local timezone
+    const date = new Date(year, month - 1, day);
+    
+    // Format without timezone conversion
+    return date.toLocaleDateString('en-US', {
       weekday: 'long',
+      year: 'numeric',
       month: 'long',
-      day: 'numeric',
-      year: 'numeric'
+      day: 'numeric'
     });
-  };
+  }
 
   if (loading) {
     return (
@@ -352,7 +360,11 @@ export default function EmailEdit() {
     );
   }
 
-  const isPersonaBased = submission.challenge_type === 'Persona-Based';
+  // Derive challenge type from planning_mode and social_goal (matching Dashboard logic)
+  const challengeType = submission.planning_mode === 'personas' 
+    ? 'Persona-Based' 
+    : submission.social_goal || submission.challenge_type || 'Unknown Type';
+  const isPersonaBased = challengeType === 'Persona-Based';
   const isPending = ['pending', 'pending_approval', 'processing'].includes(submission.status);
   const statusConfig = STATUS_CONFIG[submission.status] || STATUS_CONFIG.processing;
   const StatusIcon = statusConfig.icon;
@@ -609,7 +621,7 @@ export default function EmailEdit() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Challenge Type</p>
-                  <p className="text-sm font-semibold text-gray-900">{submission.challenge_type}</p>
+                  <p className="text-sm font-semibold text-gray-900">{challengeType}</p>
                 </div>
               </div>
               
@@ -631,7 +643,7 @@ export default function EmailEdit() {
                 </div>
                 <div>
                   <p className="text-xs text-gray-500">Preferred Date</p>
-                  <p className="text-sm font-semibold text-gray-900">{formatDate(submission.preferred_date)}</p>
+                  <p className="text-sm font-semibold text-gray-900">{formatDateLocal(submission.preferred_date)}</p>
                 </div>
               </div>
               
@@ -718,8 +730,8 @@ export default function EmailEdit() {
           {submission.status !== 'pending' && submission.admins?.name && (
             <div className="card p-6">
               <div className="flex items-center gap-3 mb-4">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${submission.status === 'approved' ? 'bg-emerald-100' : 'bg-red-100'}`}>
-                  {submission.status === 'approved' ? (
+                <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${submission.status === 'sent' ? 'bg-emerald-100' : 'bg-red-100'}`}>
+                  {submission.status === 'sent' ? (
                     <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                   ) : (
                     <XCircle className="w-5 h-5 text-red-600" />
@@ -727,9 +739,17 @@ export default function EmailEdit() {
                 </div>
                 <div>
                   <h3 className="text-sm font-semibold text-gray-800">
-                    {submission.status === 'approved' ? 'Approved' : 'Rejected'}
+                    {submission.status === 'sent' ? 'Approved' : 'Rejected'}
                   </h3>
-                  <p className="text-xs text-gray-500">{formatDate(submission.approved_at)}</p>
+                  <p className="text-xs text-gray-500">
+                    {submission.approved_at || submission.updated_at 
+                      ? new Date(submission.approved_at || submission.updated_at).toLocaleDateString('en-US', { 
+                          year: 'numeric', 
+                          month: 'long', 
+                          day: 'numeric' 
+                        })
+                      : 'N/A'}
+                  </p>
                 </div>
               </div>
               <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl">
@@ -786,15 +806,23 @@ function EmailPreviewModal({ submission, subject, recipientEmail, personaBridge,
     return () => document.removeEventListener('keydown', handleEscape);
   }, [onClose]);
 
-  const formatDate = (dateString) => {
-    if (!dateString) return 'N/A';
-    return new Date(dateString).toLocaleDateString('en-US', {
+  function formatDateLocal(dateStr) {
+    if (!dateStr) return '';
+    
+    // Parse date components from ISO string (YYYY-MM-DD)
+    const [year, month, day] = dateStr.split('-').map(Number);
+    
+    // Create date in local timezone
+    const date = new Date(year, month - 1, day);
+    
+    // Format without timezone conversion
+    return date.toLocaleDateString('en-US', {
       weekday: 'long',
       year: 'numeric',
       month: 'long',
       day: 'numeric'
     });
-  };
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -862,7 +890,7 @@ function EmailPreviewModal({ submission, subject, recipientEmail, personaBridge,
                 <tbody>
                   <tr className="border-b border-gray-200">
                     <td className="py-3 px-4 text-gray-600">Challenge Type</td>
-                    <td className="py-3 px-4 font-medium text-gray-800">{submission?.challenge_type || 'N/A'}</td>
+                    <td className="py-3 px-4 font-medium text-gray-800">{submission?.planning_mode === 'personas' ? 'Persona-Based' : submission?.social_goal || submission?.challenge_type || 'N/A'}</td>
                   </tr>
                   <tr className="border-b border-gray-200">
                     <td className="py-3 px-4 text-gray-600">Location</td>
@@ -870,7 +898,7 @@ function EmailPreviewModal({ submission, subject, recipientEmail, personaBridge,
                   </tr>
                   <tr className="border-b border-gray-200">
                     <td className="py-3 px-4 text-gray-600">Date</td>
-                    <td className="py-3 px-4 font-medium text-gray-800">{formatDate(submission?.preferred_date)}</td>
+                    <td className="py-3 px-4 font-medium text-gray-800">{formatDateLocal(submission?.preferred_date)}</td>
                   </tr>
                   <tr>
                     <td className="py-3 px-4 text-gray-600">Budget</td>
