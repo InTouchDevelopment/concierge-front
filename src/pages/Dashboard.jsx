@@ -201,11 +201,7 @@ export default function Dashboard() {
             >
               <option value="all">All Types</option>
               <option value="Persona-Based">👥 Persona-Based</option>
-              <option value="Active Adventure">🎯 Active Adventure</option>
-              <option value="Creative Collab">🎨 Creative Collab</option>
-              <option value="Foodie Quest">🍜 Foodie Quest</option>
-              <option value="Chill Hangout">☕ Chill Hangout</option>
-              <option value="Learning Together">📚 Learning Together</option>
+              <option value="Social Recommendation">🎯 Social Recommendation</option>
             </select>
           </div>
 

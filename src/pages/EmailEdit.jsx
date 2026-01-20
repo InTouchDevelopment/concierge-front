@@ -869,123 +869,147 @@ function EmailPreviewModal({ submission, subject, recipientEmail, personaBridge,
 
         {/* Email Content */}
         <div className="flex-1 overflow-y-auto p-6">
-          <div className="bg-gray-50 rounded-xl p-6" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
+          <div className="bg-white rounded-xl overflow-hidden shadow-sm" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" }}>
             {/* Header */}
-            <div className="border-b-4 pb-5 mb-6" style={{ borderColor: '#2433A7' }}>
-              <h1 className="text-2xl font-semibold mb-2" style={{ color: '#2433A7' }}>
-                Your Connection Plan is Ready! ✨
+            <div className="bg-gradient-to-br from-indigo-500 to-purple-600 px-8 py-8 text-center">
+              <h1 className="text-3xl font-bold text-white mb-3">
+                🌟 Social Concierge
               </h1>
-              <p className="text-gray-500 text-sm">Personalized activities curated just for you</p>
+              <p className="text-white/90 text-sm">
+                Your personalized connection plan is ready!
+              </p>
             </div>
 
-            {/* Info Table */}
-            <div className="mb-6 rounded-lg overflow-hidden border-l-4" style={{ borderColor: '#2433A7', backgroundColor: '#F9FAFB' }}>
-              <table className="w-full text-sm">
-                <thead>
-                  <tr style={{ backgroundColor: '#2433A7' }}>
-                    <th className="text-left text-white text-xs font-semibold uppercase tracking-wider py-3 px-4">Detail</th>
-                    <th className="text-left text-white text-xs font-semibold uppercase tracking-wider py-3 px-4">Information</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-4 text-gray-600">Challenge Type</td>
-                    <td className="py-3 px-4 font-medium text-gray-800">{submission?.planning_mode === 'personas' ? 'Persona-Based' : submission?.social_goal || submission?.challenge_type || 'N/A'}</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-4 text-gray-600">Location</td>
-                    <td className="py-3 px-4 font-medium text-gray-800">{submission?.location || 'N/A'}</td>
-                  </tr>
-                  <tr className="border-b border-gray-200">
-                    <td className="py-3 px-4 text-gray-600">Date</td>
-                    <td className="py-3 px-4 font-medium text-gray-800">{formatDateLocal(submission?.preferred_date)}</td>
-                  </tr>
-                  <tr>
-                    <td className="py-3 px-4 text-gray-600">Budget</td>
-                    <td className="py-3 px-4 font-medium text-gray-800">{submission?.budget || 'N/A'}</td>
-                  </tr>
-                </tbody>
-              </table>
+            {/* Mode Badge & Subject */}
+            <div className="px-8 pt-6 text-center">
+              <div className="mb-4">
+                {submission?.planning_mode === 'social_challenge' ? (
+                  <span className="inline-block bg-blue-50 text-blue-700 px-4 py-1.5 rounded-full text-sm font-semibold">
+                    🎯 {submission?.social_goal || 'Social Challenge'}
+                  </span>
+                ) : (
+                  <span className="inline-block bg-purple-50 text-purple-700 px-4 py-1.5 rounded-full text-sm font-semibold">
+                    ✨ Persona Match
+                  </span>
+                )}
+              </div>
+              <h2 className="text-xl font-semibold text-gray-800">
+                {subject || 'Connection Plan'}
+              </h2>
             </div>
 
-            {/* Persona Bridge */}
+            {/* Metadata Box */}
+            <div className="px-8 pt-6 pb-4">
+              <div className="bg-gray-50 rounded-xl p-5">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-gray-500 text-xs uppercase mb-1">User</p>
+                    <p className="text-gray-800 font-medium">{submission?.user_persona || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 text-xs uppercase mb-1">Friend</p>
+                    <p className="text-gray-800 font-medium">{submission?.friend_persona || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 text-xs uppercase mb-1">📍 Location</p>
+                    <p className="text-gray-800 font-medium">{submission?.user_location || submission?.location || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 text-xs uppercase mb-1">📅 Date</p>
+                    <p className="text-gray-800 font-medium">{formatDateLocal(submission?.preferred_date)}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 text-xs uppercase mb-1">💰 Budget</p>
+                    <p className="text-gray-800 font-medium">{submission?.budget || 'N/A'}</p>
+                  </div>
+                  <div>
+                    <p className="text-gray-500 text-xs uppercase mb-1">🚗 Travel</p>
+                    <p className="text-gray-800 font-medium">{submission?.max_travel_time || '30'} min max</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Connection Insight */}
             {personaBridge && (
-              <div className="mb-6 p-5 rounded-lg border-l-4" style={{ borderColor: '#2433A7', backgroundColor: '#F9FAFB' }}>
-                <h3 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: '#2433A7' }}>
-                  🌉 Connection Bridge
+              <div className="px-8 pb-6">
+                <h3 className="text-base font-semibold text-indigo-600 mb-3">
+                  🌉 Connection Insight
                 </h3>
-                <p className="text-gray-700 leading-relaxed whitespace-pre-wrap">{personaBridge}</p>
+                <p className="text-gray-600 leading-relaxed whitespace-pre-wrap">{personaBridge}</p>
               </div>
             )}
 
-            {/* Activities */}
+            {/* Venue Suggestions */}
             {activities && activities.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-sm font-semibold uppercase tracking-wider mb-4" style={{ color: '#2433A7' }}>
-                  📍 Suggested Activities
+              <div className="px-8 pb-6">
+                <h3 className="text-base font-semibold text-indigo-600 mb-4">
+                  📍 Venue Suggestions
                 </h3>
-                <div className="rounded-lg overflow-hidden border" style={{ borderColor: 'rgba(155, 179, 229, 0.5)' }}>
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr style={{ backgroundColor: '#2433A7' }}>
-                        <th className="text-left text-white text-xs font-semibold uppercase tracking-wider py-3 px-4">Activity</th>
-                        <th className="text-left text-white text-xs font-semibold uppercase tracking-wider py-3 px-4">Details</th>
-                        <th className="text-left text-white text-xs font-semibold uppercase tracking-wider py-3 px-4">Rating</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {activities.map((activity, index) => (
-                        <tr key={index} className="border-b border-gray-200 last:border-b-0">
-                          <td className="py-3 px-4">
-                            <div className="font-medium text-gray-800">{activity.name || `Activity ${index + 1}`}</div>
-                            {activity.link && (
-                              <a 
-                                href={activity.link} 
-                                target="_blank" 
-                                rel="noopener noreferrer"
-                                className="text-xs flex items-center gap-1 mt-1"
-                                style={{ color: '#527AD3' }}
-                              >
-                                <ExternalLink className="w-3 h-3" />
-                                View on Maps
-                              </a>
-                            )}
-                          </td>
-                          <td className="py-3 px-4 text-gray-600">
-                            <div>{activity.address || 'No address'}</div>
-                            {activity.hours && <div className="text-xs text-gray-400 mt-1">⏰ {activity.hours}</div>}
-                          </td>
-                          <td className="py-3 px-4">
-                            {activity.rating && (
-                              <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold" style={{ backgroundColor: '#FEF3C7', color: '#92400E' }}>
-                                ⭐ {activity.rating}
-                              </span>
-                            )}
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                <div className="space-y-4">
+                  {activities.map((activity, index) => (
+                    <div key={index} className="bg-gray-50 rounded-xl p-5 border-l-4 border-indigo-500">
+                      <div className="flex justify-between items-start mb-3">
+                        <h4 className="text-gray-800 font-medium">
+                          <span className="text-indigo-600 font-bold">{index + 1}. </span>
+                          {activity.link ? (
+                            <a href={activity.link} target="_blank" rel="noopener noreferrer" className="text-gray-800 hover:text-indigo-600">
+                              {activity.name || `Venue ${index + 1}`}
+                            </a>
+                          ) : (
+                            activity.name || `Venue ${index + 1}`
+                          )}
+                        </h4>
+                        {activity.rating && (
+                          <span className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap">
+                            {activity.rating}
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-gray-600 text-sm mb-2">
+                        📍 {activity.address || 'Address not available'}
+                      </p>
+                      <p className="text-gray-600 text-sm mb-3">
+                        🕐 {activity.hours || 'Hours not available'}
+                      </p>
+                      {activity.link && (
+                        <a 
+                          href={activity.link}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-block bg-indigo-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-indigo-700"
+                        >
+                          View on Google Maps →
+                        </a>
+                      )}
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
 
             {/* Invitation Script */}
             {invitationScript && (
-              <div className="mb-6 p-5 rounded-lg border-l-4" style={{ borderColor: '#2433A7', backgroundColor: '#F9FAFB' }}>
-                <h3 className="text-sm font-semibold uppercase tracking-wider mb-3" style={{ color: '#2433A7' }}>
+              <div className="px-8 pb-6">
+                <h3 className="text-base font-semibold text-indigo-600 mb-3">
                   💬 Invitation Script
                 </h3>
-                <div className="bg-white p-4 rounded-lg border border-gray-200 italic text-gray-700 whitespace-pre-wrap">
-                  "{invitationScript}"
+                <div className="bg-green-50 border border-green-200 rounded-xl p-5">
+                  <p className="text-green-800 leading-relaxed italic whitespace-pre-wrap">
+                    "{invitationScript}"
+                  </p>
+                  <p className="text-green-700 text-xs mt-3">
+                    ✓ Copy and personalize this message
+                  </p>
                 </div>
               </div>
             )}
 
             {/* Footer */}
-            <div className="mt-8 pt-6 border-t border-gray-200 text-center">
-              <p className="text-gray-500 text-sm">Generated by Stratstone Concierge</p>
-              <p className="text-xs text-gray-400 mt-1">This email was crafted with AI assistance</p>
+            <div className="bg-gray-50 px-8 py-6 text-center border-t border-gray-200">
+              <p className="text-gray-600 text-xl italic" style={{ fontFamily: "'Lora', serif" }}>
+                Curated by NithenAI
+              </p>
             </div>
           </div>
         </div>
