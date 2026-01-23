@@ -612,7 +612,7 @@ export default function EmailEdit() {
             </h3>
             <div className="space-y-5">
               <div className="flex items-start gap-3">
-                <div className={`w-9 h-9 rounded-lg flex items-center justify-center ${isPersonaBased ? 'bg-purple-100' : 'bg-primary-100'}`}>
+                <div className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${isPersonaBased ? 'bg-purple-100' : 'bg-primary-100'}`}>
                   {isPersonaBased ? (
                     <Users className="w-4 h-4 text-purple-600" />
                   ) : (
@@ -626,7 +626,7 @@ export default function EmailEdit() {
               </div>
               
               <div className="flex items-start gap-3">
-                <div className="w-9 h-9 bg-gray-100 rounded-lg flex items-center justify-center">
+                <div className="w-9 h-9 bg-gray-100 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
                   <MapPin className="w-4 h-4 text-gray-500" />
                 </div>
                 <div>
@@ -638,7 +638,7 @@ export default function EmailEdit() {
               </div>
               
               <div className="flex items-start gap-3">
-                <div className="w-9 h-9 bg-gray-100 rounded-lg flex items-center justify-center">
+                <div className="w-9 h-9 bg-gray-100 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
                   <Calendar className="w-4 h-4 text-gray-500" />
                 </div>
                 <div>
@@ -648,7 +648,7 @@ export default function EmailEdit() {
               </div>
               
               <div className="flex items-start gap-3">
-                <div className="w-9 h-9 bg-gray-100 rounded-lg flex items-center justify-center">
+                <div className="w-9 h-9 bg-gray-100 rounded-lg flex items-center justify-center shrink-0 mt-0.5">
                   <DollarSign className="w-4 h-4 text-gray-500" />
                 </div>
                 <div>
