@@ -38,6 +38,11 @@ export async function rejectSubmission(id) {
   return response.data;
 }
 
+export async function retrySubmission(id) {
+  const response = await api.post(`/api/admin/submissions/${id}/retry`);
+  return response.data;
+}
+
 export async function getStats() {
   const response = await api.get('/api/admin/submissions/stats');
   return response.data;

@@ -6,7 +6,7 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { getSubmission, updateSubmission, approveSubmission, rejectSubmission } from '../services/submissions';
+import { getSubmission, updateSubmission, approveSubmission, rejectSubmission, retrySubmission } from '../services/submissions';
 import Layout from '../components/layout/Layout';
 import {
   ArrowLeft,
@@ -32,7 +32,8 @@ import {
   User,
   X,
   ExternalLink,
-  Check
+  Check,
+  RefreshCw
 } from 'lucide-react';
 
 const STATUS_CONFIG = {
@@ -92,6 +93,7 @@ export default function EmailEdit() {
   const [saving, setSaving] = useState(false);
   const [approving, setApproving] = useState(false);
   const [rejecting, setRejecting] = useState(false);
+  const [retrying, setRetrying] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   
@@ -301,6 +303,25 @@ export default function EmailEdit() {
     }
   };
 
+  const handleRetry = async () => {
+    if (!confirm('Retry this failed submission?')) return;
+
+    setRetrying(true);
+    setError('');
+    setSuccess('');
+
+    try {
+      await retrySubmission(id);
+      setSuccess('Retry initiated');
+      await fetchSubmission();
+      setTimeout(() => setSuccess(''), 3000);
+    } catch (err) {
+      setError(err.response?.data?.message || 'Failed to retry');
+    } finally {
+      setRetrying(false);
+    }
+  };
+
   const updateActivity = (index, field, value) => {
     const newActivities = [...activities];
     newActivities[index] = { ...newActivities[index], [field]: value };
@@ -366,6 +387,9 @@ export default function EmailEdit() {
     : submission.social_goal || submission.challenge_type || 'Unknown Type';
   const isPersonaBased = challengeType === 'Persona-Based';
   const isPending = ['pending', 'pending_approval', 'processing'].includes(submission.status);
+  const isActionable = [...new Set(['pending', 'pending_approval', 'processing', 'failed'])].includes(submission.status);
+  const canApprove = submission.status === 'processing';
+  const canRetry = submission.status === 'failed';
   const statusConfig = STATUS_CONFIG[submission.status] || STATUS_CONFIG.processing;
   const StatusIcon = statusConfig.icon;
 
@@ -660,7 +684,7 @@ export default function EmailEdit() {
           </div>
 
           {/* Actions */}
-          {isPending && (
+          {isActionable && (
             <div className="card p-6 space-y-3">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-sm font-semibold text-gray-800">Actions</h3>
@@ -700,8 +724,12 @@ export default function EmailEdit() {
               
               <button
                 onClick={handleApprove}
-                disabled={approving || autoSaving}
-                className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-teal-500 text-white py-3 px-4 rounded-xl font-semibold hover:from-emerald-600 hover:to-teal-600 disabled:opacity-50 transition-all shadow-lg shadow-emerald-500/25"
+                disabled={approving || autoSaving || !canApprove}
+                className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold transition-all shadow-lg ${
+                  canApprove
+                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-emerald-500/25'
+                    : 'bg-gray-200 text-gray-500 cursor-not-allowed shadow-gray-200/50'
+                }`}
               >
                 {approving ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
@@ -709,6 +737,23 @@ export default function EmailEdit() {
                   <Send className="w-5 h-5" />
                 )}
                 Approve & Send
+              </button>
+
+              <button
+                onClick={handleRetry}
+                disabled={retrying || !canRetry}
+                className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold transition-all ${
+                  canRetry
+                    ? 'bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100'
+                    : 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed'
+                }`}
+              >
+                {retrying ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  <RefreshCw className="w-5 h-5" />
+                )}
+                Retry
               </button>
               
               <button
