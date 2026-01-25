@@ -28,11 +28,12 @@ import {
   AlertTriangle
 } from 'lucide-react';
 
-// 4-status system: processing, sent, rejected, failed
+// 5-status system: processing, sent, rejected, failed, in_queue
 const STATUS_STYLES = {
   processing: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700', icon: Clock, label: 'Processing' },
   pending: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700', icon: Clock, label: 'Processing' }, // Legacy mapping
   pending_approval: { bg: 'bg-amber-50', border: 'border-amber-200', text: 'text-amber-700', icon: Clock, label: 'Processing' }, // Legacy mapping
+  in_queue: { bg: 'bg-slate-50', border: 'border-slate-200', text: 'text-slate-700', icon: Inbox, label: 'Queued' },
   sent: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', icon: Mail, label: 'Sent' },
   rejected: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', icon: XCircle, label: 'Rejected' },
   failed: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', icon: AlertTriangle, label: 'Failed' },
@@ -52,7 +53,7 @@ export default function Dashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
   
   const [submissions, setSubmissions] = useState([]);
-  const [stats, setStats] = useState({ total: 0, pending_approval: 0, approved: 0, rejected: 0 });
+  const [stats, setStats] = useState({ total: 0, processing: 0, sent: 0, rejected: 0, failed: 0, in_queue: 0 });
   const [loading, setLoading] = useState(true);
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, total: 0 });
   
@@ -135,12 +136,19 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-6 gap-4 mb-8">
         <StatCard 
           label="Total Emails" 
           value={stats.total} 
           icon={Inbox}
           gradient="from-slate-500 to-slate-600"
+        />
+        <StatCard 
+          label="Queued" 
+          value={stats.in_queue || 0} 
+          icon={Inbox}
+          gradient="from-slate-400 to-slate-500"
+          highlight={(stats.in_queue || 0) > 0}
         />
         <StatCard 
           label="Processing" 
@@ -185,6 +193,7 @@ export default function Dashboard() {
               className="input py-2.5 px-4 w-auto min-w-[140px]"
             >
               <option value="all">All Status</option>
+              <option value="in_queue">🧾 Queued</option>
               <option value="processing">⏳ Processing</option>
               <option value="sent">📧 Sent</option>
               <option value="rejected">❌ Rejected</option>

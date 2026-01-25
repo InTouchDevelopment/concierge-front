@@ -1,7 +1,7 @@
 /**
  * Email Edit Page
  * View and edit submission details with modern styling
- * Updated: Auto-save, validation, and 4-status system
+ * Updated: Auto-save, validation, and 5-status system
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
@@ -33,7 +33,8 @@ import {
   X,
   ExternalLink,
   Check,
-  RefreshCw
+  RefreshCw,
+  Inbox
 } from 'lucide-react';
 
 const STATUS_CONFIG = {
@@ -43,6 +44,13 @@ const STATUS_CONFIG = {
     text: 'text-blue-700',
     icon: Loader2,
     label: 'Processing'
+  },
+  in_queue: {
+    bg: 'bg-slate-50',
+    border: 'border-slate-200',
+    text: 'text-slate-700',
+    icon: Inbox,
+    label: 'Queued'
   },
   pending_approval: { 
     bg: 'bg-amber-50', 
@@ -387,9 +395,10 @@ export default function EmailEdit() {
     : submission.social_goal || submission.challenge_type || 'Unknown Type';
   const isPersonaBased = challengeType === 'Persona-Based';
   const isPending = ['pending', 'pending_approval', 'processing'].includes(submission.status);
-  const isActionable = [...new Set(['pending', 'pending_approval', 'processing', 'failed'])].includes(submission.status);
+  const isActionable = [...new Set(['pending', 'pending_approval', 'processing', 'failed', 'in_queue'])].includes(submission.status);
   const canApprove = submission.status === 'processing';
-  const canRetry = submission.status === 'failed';
+  const canRetry = ['failed', 'in_queue'].includes(submission.status);
+  const isQueued = submission.status === 'in_queue';
   const statusConfig = STATUS_CONFIG[submission.status] || STATUS_CONFIG.processing;
   const StatusIcon = statusConfig.icon;
 
@@ -722,22 +731,24 @@ export default function EmailEdit() {
                 </button>
               )}
               
-              <button
-                onClick={handleApprove}
-                disabled={approving || autoSaving || !canApprove}
-                className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold transition-all shadow-lg ${
-                  canApprove
-                    ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-emerald-500/25'
-                    : 'bg-gray-200 text-gray-500 cursor-not-allowed shadow-gray-200/50'
-                }`}
-              >
-                {approving ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <Send className="w-5 h-5" />
-                )}
-                Approve & Send
-              </button>
+              {!isQueued && (
+                <button
+                  onClick={handleApprove}
+                  disabled={approving || autoSaving || !canApprove}
+                  className={`w-full flex items-center justify-center gap-2 py-3 px-4 rounded-xl font-semibold transition-all shadow-lg ${
+                    canApprove
+                      ? 'bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600 shadow-emerald-500/25'
+                      : 'bg-gray-200 text-gray-500 cursor-not-allowed shadow-gray-200/50'
+                  }`}
+                >
+                  {approving ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <Send className="w-5 h-5" />
+                  )}
+                  Approve & Send
+                </button>
+              )}
 
               <button
                 onClick={handleRetry}
@@ -756,18 +767,20 @@ export default function EmailEdit() {
                 Retry
               </button>
               
-              <button
-                onClick={handleReject}
-                disabled={rejecting}
-                className="w-full flex items-center justify-center gap-2 bg-red-50 text-red-600 border border-red-200 py-3 px-4 rounded-xl font-semibold hover:bg-red-100 disabled:opacity-50 transition-all"
-              >
-                {rejecting ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  <XCircle className="w-5 h-5" />
-                )}
-                Reject
-              </button>
+              {!isQueued && (
+                <button
+                  onClick={handleReject}
+                  disabled={rejecting}
+                  className="w-full flex items-center justify-center gap-2 bg-red-50 text-red-600 border border-red-200 py-3 px-4 rounded-xl font-semibold hover:bg-red-100 disabled:opacity-50 transition-all"
+                >
+                  {rejecting ? (
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                  ) : (
+                    <XCircle className="w-5 h-5" />
+                  )}
+                  Reject
+                </button>
+              )}
             </div>
           )}
 
