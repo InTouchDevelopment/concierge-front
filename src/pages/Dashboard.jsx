@@ -25,7 +25,10 @@ import {
   Inbox,
   ArrowRight,
   TrendingUp,
-  AlertTriangle
+  AlertTriangle,
+  Instagram,
+  Music2,
+  Globe
 } from 'lucide-react';
 
 // 5-status system: processing, sent, rejected, failed, in_queue
@@ -377,6 +380,25 @@ function SubmissionCard({ submission, onClick, timeAgo, formatDate }) {
               <span className="flex items-center gap-1.5">
                 <DollarSign className="w-4 h-4 text-gray-400" />
                 {submission.budget?.split(' ')[0] || 'N/A'}
+              </span>
+              {/* UTM Source */}
+              <span className="flex items-center gap-1.5">
+                {submission.utm_source === 'instagram' ? (
+                  <>
+                    <Instagram className="w-4 h-4 text-gray-400" />
+                    Instagram
+                  </>
+                ) : submission.utm_source === 'tiktok' ? (
+                  <>
+                    <Music2 className="w-4 h-4 text-gray-400" />
+                    TikTok
+                  </>
+                ) : (
+                  <>
+                    <Globe className="w-4 h-4 text-gray-400" />
+                    Web
+                  </>
+                )}
               </span>
             </div>
 
